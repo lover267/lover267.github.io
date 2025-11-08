@@ -1,0 +1,2646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>招标方案智能审核工具（测试版）</title>
+    <style>
+        /* 商业主题基础样式 */
+        :root {
+            --main-font-family: "Times New Roman", "Computer Modern", serif;
+            --main-text-color: #000000; /* 主体文字颜色：黑色 */
+            --heading-color: #44435F; /* 各级标题：深灰蓝色 */
+            --background-color: #f9f9f9; /* 整体背景：非常浅的浅色系 */
+            --paper-color: #ffffff; /* 容器"纸张"背景：白色 */
+            --accent-color: #505F99; /* 深蓝色，商务专业感 */
+            --light-accent: #7396D1; /* 浅蓝，用于装饰条或渐变 */
+            --border-color: #d0d0d0;
+            --success-color: #4CAF50;
+            --warning-color: #FF9800;
+            --error-color: #F44336;
+            --light-bg: #f5f7fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--main-font-family);
+            color: var(--main-text-color);
+            background-color: var(--background-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--paper-color);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--heading-color);
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 2.2em;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.6em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .header-info {
+            text-align: center;
+            color: var(--accent-color);
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .input-section {
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--heading-color);
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-family: var(--main-font-family);
+            font-size: 1em;
+            line-height: 1.5;
+            resize: vertical;
+            background-color: var(--light-bg);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 5px rgba(80, 95, 153, 0.2);
+        }
+
+        .file-upload {
+            border: 2px dashed var(--border-color);
+            border-radius: 5px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            background-color: var(--light-bg);
+            position: relative;
+        }
+
+        .file-upload:hover, .file-upload.dragover {
+            border-color: var(--accent-color);
+            background-color: rgba(80, 95, 153, 0.05);
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .upload-btn:hover {
+            background-color: var(--heading-color);
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 0.95em;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .file-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            display: none;
+        }
+
+        .file-info.show {
+            display: block;
+        }
+
+        .file-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .file-info-label {
+            font-weight: bold;
+            color: var(--heading-color);
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-family: var(--main-font-family);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--heading-color);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #e0e0e0;
+            color: var(--heading-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #d0d0d0;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result-section {
+            margin-top: 40px;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            background-color: var(--light-bg);
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            min-height: 200px;
+            font-family: var(--main-font-family);
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .info-card {
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-card h4 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .info-card ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .info-card li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .info-card li:before {
+            content: "•";
+            color: var(--accent-color);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            background-color: white;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+
+        .loading-text {
+            margin-top: 15px;
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .spinner {
+            border: 4px solid rgba(80, 95, 153, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--accent-color);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            line-height: 1.5;
+        }
+
+        .error-message strong {
+            color: #d00;
+            font-size: 16px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .error-hint {
+            color: #666;
+            font-size: 12px;
+            margin-top: 8px;
+            display: block;
+            font-style: italic;
+        }
+
+        /* 保持原有样式，添加行高 */
+        .error-message {
+            color: var(--error-color);
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .success-message {
+            color: var(--success-color);
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.4em;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .file-upload {
+                padding: 30px 15px;
+            }
+        }
+
+        /* 复制按钮样式 */
+        .copy-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .tab-container {
+            margin-bottom: 20px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .tab.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* API设置区域样式 */
+        .api-settings {
+            background-color: var(--light-bg);
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .api-settings h4 {
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .api-settings-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .api-settings-row label {
+            margin-bottom: 0;
+            min-width: 120px;
+        }
+
+        .api-settings-row input {
+            flex: 1;
+            min-width: 200px;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        /* 风险列表样式 */
+        .risk-item {
+            border-left: 4px solid var(--error-color);
+            padding-left: 15px;
+            margin-bottom: 15px;
+            background-color: #fdf2f2;
+            padding: 15px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .risk-item h4 {
+            color: var(--error-color);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .risk-item .risk-type {
+            font-weight: bold;
+            color: var(--warning-color);
+            margin-bottom: 8px;
+        }
+
+        .risk-item .risk-basis {
+            margin-bottom: 8px;
+        }
+
+        .risk-item .risk-suggestion {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* 代码块样式 */
+        .code-block {
+            background-color: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        /* 提示词预览区域 */
+        .prompt-preview {
+            background-color: #f0f4ff;
+            border: 1px solid #d0d0d0;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 0.9em;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .prompt-preview-toggle {
+            margin-top: 10px;
+            font-size: 0.9em;
+            cursor: pointer;
+            color: var(--accent-color);
+            text-decoration: underline;
+        }
+        
+        /* 政策法规文件上传相关样式 */
+        .policy-file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .policy-file-item:hover {
+            background-color: #f5f7fa;
+            border-color: var(--accent-color);
+        }
+        
+        .policy-file-item .file-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            margin-right: 10px;
+        }
+        
+        .remove-file-btn {
+            padding: 4px 10px;
+            background-color: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+            transition: background-color 0.3s ease;
+        }
+        
+        .remove-file-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .no-files {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        
+        #policyFileDropArea.dragover {
+            border-color: var(--accent-color);
+            background-color: #f0f4ff;
+        }
+        
+        /* 进度条样式 */
+        .progress-container {
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar-wrapper {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, 0.2) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.2) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 20px 20px;
+            animation: progress-stripes 1s linear infinite;
+        }
+        
+        @keyframes progress-stripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 20px 0; }
+        }
+        
+        .progress-bar.analysis {
+            background-color: #4caf50;
+        }
+        
+        .progress-text {
+            margin: 5px 0 0 0;
+            color: var(--text-color);
+            font-size: 0.9em;
+        }
+        
+        /* 详细信息日志区域样式 */
+        .detail-info-container {
+            margin-top: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+        
+        .detail-info-container h5 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            font-size: 1em;
+        }
+        
+        .detail-info-log {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        
+        .detail-info-log .log-entry {
+            margin-bottom: 5px;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .detail-info-log .log-entry::before {
+            content: '•';
+            position: absolute;
+            left: 5px;
+            color: var(--accent-color);
+        }
+        
+        .detail-info-log .log-entry.error {
+            color: var(--error-color);
+        }
+        
+        .detail-info-log .log-entry.error::before {
+            color: var(--error-color);
+        }
+    </style>
+    <!-- 引入PDF.js库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <!-- 引入jszip库用于处理Office文件 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- 引入mammoth.js库用于处理.docx文件 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <!-- 引入Tesseract.js库用于OCR文本识别 -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4.1.1/dist/tesseract.min.js"></script>
+    <!-- 移除可能有问题的htmlparser2库，使用替代方案 -->
+    <script>
+        // 简单的HTML文本提取功能，替代htmlparser2库
+        function extractTextFromHtml(html) {
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            return tempDiv.textContent || tempDiv.innerText || '';
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>文档智能审核工具 - DeepSeek专用版</h1>
+        <div class="header-info">
+            基于DeepSeek大模型的招标方案隐性违规风险智能审查
+        </div>
+
+        <div class="info-card">
+            <h4>功能特点</h4>
+            <ul>
+                <li>支持PDF、Word(.docx/.doc)文件上传和文本粘贴分析</li>
+                <li>使用DeepSeek大模型进行深度语义分析</li>
+                <li>专注识别三类隐性违规风险：变相抬高资质门槛、条款倾向性表述、文字违法违规</li>
+                <li>内置专业提示词，确保分析结果符合合规审查标准</li>
+                <li>生成结构化风险清单，包含违规定位、判定依据和修改建议</li>
+            </ul>
+        </div>
+
+        <!-- API设置区域 -->
+        <div class="api-settings">
+            <h4>DeepSeek API 设置</h4>
+            <div class="api-settings-row">
+                <label for="apiKey">API密钥：</label>
+<input type="password" id="apiKey" value="sk-83ef47449d0541c68ad85ca0af97c613" placeholder="请输入您的DeepSeek API密钥" required>
+            </div>
+            <div class="api-settings-row">
+                <label for="apiEndpoint">API端点：</label>
+                <input type="text" id="apiEndpoint" value="https://api.deepseek.com/v1/chat/completions" placeholder="API端点地址" required>
+            </div>
+            <div class="api-settings-row">
+                <label for="apiModel">模型选择：</label>
+                <select id="apiModel">
+                    <option value="deepseek-chat">DeepSeek-Chat</option>
+                    <option value="deepseek-coder">DeepSeek-Coder</option>
+                    <option value="deepseek-vl">DeepSeek-VL</option>
+                </select>
+            </div>
+            <p class="prompt-preview-toggle" onclick="togglePromptPreview()">查看内置分析提示词 ▼</p>
+            <div id="promptPreview" class="prompt-preview" style="display: none;">
+                你是招标方案隐性违规风险审查专家智能体，专注于识别政府采购、工程建设、企业采购类招标方案中的隐性违规问题。
+                
+                请按照以下标准判断隐性违规，需结合"条款表述 + 项目实际需求"综合推理：
+                1. 变相抬高资质门槛：资质要求与项目需求不匹配，排除合格供应商
+                2. 条款倾向性表述：文字隐含指向特定供应商，限制公平竞争
+                3. 文字违法违规：违反《招标投标法》《政府采购法》及其实施条例，表述隐晦
+                
+                请以"风险清单"形式输出分析结果，每类违规需包含：
+                - 违规条款定位：引用原文，标注具体模块（如"资质要求部分"、"技术参数部分"）
+                - 违规类型判定：归类为上述三类之一
+                - 判定依据：分点说明"语义推理过程 + 关联的法律条文/通用规则"
+                - 修改建议：提供具体、可落地的条款修改方向，需符合合规要求且不影响项目需求
+                
+                分析过程中请注意：
+                - 不做模糊结论：必须明确"违规"或"不违规"，并说明理由
+                - 不遗漏关键信息：若文档中未明确项目预算、类型等关键信息，需提示并基于已有信息分析
+                - 所有结论需标注"仅供合规审查参考，最终以专业合规人员审核为准"
+            </div>
+        </div>
+
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="file-upload">文件上传</div>
+                <div class="tab" data-tab="text-input">文本输入</div>
+            </div>
+
+            <div id="file-upload" class="tab-content active">
+                <div class="file-upload" id="fileDropArea">
+                    <div class="upload-btn">选择或拖拽文件到此处</div>
+                    <input type="file" id="fileInput" accept=".pdf,.docx,.doc">
+                    <p class="upload-text">支持PDF和Word(.docx/.doc)格式文件<br>最大支持30MB</p>
+                </div>
+
+                <div id="fileInfo" class="file-info">
+                    <div class="file-info-item">
+                        <span class="file-info-label">文件名：</span>
+                        <span id="fileName">-</span>
+                    </div>
+                    <div class="file-info-item">
+                        <span class="file-info-label">文件类型：</span>
+                        <span id="fileType">-</span>
+                    </div>
+                    <div class="file-info-item">
+                        <span class="file-info-label">文件大小：</span>
+                        <span id="fileSize">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="text-input" class="tab-content">
+                <div class="input-group">
+                    <label for="documentContent">文档内容（粘贴文本）：</label>
+                    <textarea id="documentContent" placeholder="请在此粘贴文档的内容..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <div class="loading" id="loadingIndicator">
+            <div class="spinner"></div>
+            <div class="loading-text">正在处理文档，请稍候...</div>
+            <p style="margin-top: 10px; color: #666; font-size: 0.9em;" id="processingStatus">准备中...</p>
+        </div>
+
+        <!-- 文件上传进度显示模块 -->
+        <div class="progress-container" id="uploadProgressContainer" style="display: none;">
+            <h4>文件上传进度</h4>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar" id="uploadProgressBar" style="width: 0%;"></div>
+            </div>
+            <p id="uploadProgressText" class="progress-text">准备上传...</p>
+        </div>
+        
+        <!-- 分析进度和详细信息模块 -->
+        <div class="progress-container" id="analysisProgressContainer" style="display: none;">
+            <h4>分析进度</h4>
+            <div class="progress-bar-wrapper">
+                <div class="progress-bar analysis" id="analysisProgressBar" style="width: 0%;"></div>
+            </div>
+            <p id="analysisProgressText" class="progress-text">准备分析...</p>
+            
+            <!-- API调用详细信息区域 -->
+            <div class="detail-info-container">
+                <h5>API调用详情</h5>
+                <div id="detailInfoLog" class="detail-info-log"></div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="analyzeBtn" class="btn btn-primary" disabled>开始审核</button>
+            <button id="clearBtn" class="btn btn-secondary">清空</button>
+        </div>
+
+        <!-- 政策法规文件上传区域 -->
+        <div class="info-card">
+            <h4>📚 政策法规文件（可选）</h4>
+            <p>上传本地政策法规文件以增强审核准确性，将优先作为判定依据</p>
+            
+            <div class="file-upload" id="policyFileDropArea" style="margin-bottom: 15px;">
+                <div class="upload-btn">选择或拖拽政策法规文件到此处</div>
+                <input type="file" id="policyFileInput" accept=".pdf,.docx,.doc,.txt" multiple>
+                <p class="upload-text">支持PDF、Word和文本格式文件<br>最大支持10MB，最多10个文件</p>
+            </div>
+            
+            <div class="policy-files-container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h5>已上传的政策法规文件</h5>
+                    <button id="clearPolicyFilesBtn" class="btn btn-secondary" style="padding: 5px 15px; font-size: 0.9em;" disabled>清空所有</button>
+                </div>
+                <ul id="policyFilesList" style="list-style-type: none; padding: 10px; background-color: var(--light-bg); border-radius: 5px; max-height: 200px; overflow-y: auto;">
+                    <li style="text-align: center; color: #666; font-style: italic;">暂无政策法规文件，请上传本地政策法规文件以增强审核准确性</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection" style="display: none;">
+            <div class="result-header">
+                <h3>审核报告</h3>
+                <button id="copyResultBtn" class="copy-btn">复制报告</button>
+            </div>
+            <div id="analysisResult" class="result-content"></div>
+        </div>
+
+        <div class="info-card">
+            <h4>审核重点</h4>
+            <ul>
+                <li>变相抬高资质门槛：检查资质要求与项目需求是否匹配</li>
+                <li>条款倾向性表述：识别是否存在指向特定供应商的隐含表述</li>
+                <li>文字违法违规：检查是否违反《招标投标法》《政府采购法》等法规</li>
+                <li>关键信息完整性：评估项目预算、技术参数等重要信息是否明确</li>
+                <li>合同风险：检查合同条款是否公平、完备</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 招标方案智能审核工具 by 李嗣洋 | 本工具分析结果仅供参考，最终以专业合规人员审核为准</p>
+        </div>
+    </div>
+
+    <script>
+        // 显示/隐藏提示词预览
+        function togglePromptPreview() {
+            const preview = document.getElementById('promptPreview');
+            const toggle = document.querySelector('.prompt-preview-toggle');
+            
+            if (preview.style.display === 'none' || preview.style.display === '') {
+                preview.style.display = 'block';
+                toggle.textContent = '隐藏内置分析提示词 ▲';
+            } else {
+                preview.style.display = 'none';
+                toggle.textContent = '查看内置分析提示词 ▼';
+            }
+        }
+
+        // 文件解析器类 - 专注于文件内容提取
+        class FileParser {
+            constructor() {
+                this.onProgress = null;
+            }
+
+            // 设置进度回调
+            setProgressCallback(callback) {
+                this.onProgress = callback;
+                return this;
+            }
+
+            // 解析PDF文件
+            async parsePDF(file) {
+                try {
+                    if (this.onProgress) this.onProgress("正在加载PDF文件...");
+                    
+                    // 读取文件数据
+                    const fileData = await this._readFileAsArrayBuffer(file);
+                    
+                    if (this.onProgress) this.onProgress("正在解析PDF内容...");
+                    
+                    // 配置PDF.js
+                    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+                    
+                    // 创建ArrayBuffer的副本，避免Buffer is already detached错误
+                    const createBufferCopy = (buffer) => {
+                        const copy = new ArrayBuffer(buffer.byteLength);
+                        new Uint8Array(copy).set(new Uint8Array(buffer));
+                        return copy;
+                    };
+                    
+                    // 尝试主要的文本提取方法
+                    let textContent = '';
+                    let ocrText = '';
+                    let textExtracted = false;
+                    
+                    try {
+                        const primaryBufferCopy = createBufferCopy(fileData);
+                        textContent = await this._extractPDFText(primaryBufferCopy, numPages => {
+                            if (this.onProgress) this.onProgress(`正在提取第 ${numPages.current}/${numPages.total} 页...`);
+                        });
+                        
+                        // 如果提取的文本不为空，则标记为已成功提取
+                        if (textContent.trim()) {
+                            textExtracted = true;
+                        } else {
+                            if (this.onProgress) this.onProgress("首次提取失败，尝试备用方法...");
+                            const alternateBufferCopy = createBufferCopy(fileData);
+                            textContent = await this._extractPDFTextAlternate(alternateBufferCopy);
+                            if (textContent.trim()) {
+                                textExtracted = true;
+                            }
+                        }
+                    } catch (primaryError) {
+                        // 主要方法失败，尝试备用方法
+                        if (this.onProgress) this.onProgress(`主要方法失败(${primaryError.message})，尝试备用提取方法...`);
+                        const alternateBufferCopy = createBufferCopy(fileData);
+                        try {
+                            textContent = await this._extractPDFTextAlternate(alternateBufferCopy);
+                            if (textContent.trim()) {
+                                textExtracted = true;
+                            }
+                        } catch (alternateError) {
+                            if (this.onProgress) this.onProgress(`备用方法也失败(${alternateError.message})，尝试OCR识别...`);
+                        }
+                    }
+                    
+                    // 无论文本提取是否成功，都尝试OCR识别（特别是针对扫描件PDF）
+                    if (this.onProgress) this.onProgress("正在对PDF页面进行OCR识别...");
+                    ocrText = await this._performPDFOCR(fileData);
+                    
+                    // 合并文本内容和OCR内容
+                    const finalContent = (textExtracted ? textContent : '') + (ocrText ? '\n[OCR识别内容]\n' + ocrText : '');
+                    
+                    if (this.onProgress) this.onProgress("PDF内容提取完成（含OCR识别）");
+                    return finalContent;
+                } catch (error) {
+                    console.error('PDF解析错误:', error);
+                    throw new Error(`PDF文件解析失败: ${error.message}`);
+                }
+            }
+            
+            // 主要PDF文本提取方法
+            async _extractPDFText(fileData, progressCallback) {
+                const pdf = await pdfjsLib.getDocument({ data: fileData }).promise;
+                const numPages = pdf.numPages;
+                let textContent = '';
+                
+                for (let i = 1; i <= numPages; i++) {
+                    if (progressCallback) progressCallback({ current: i, total: numPages });
+                    
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    // 尝试不同的文本连接方式，可能对某些PDF更有效
+                    const pageText = content.items.map(item => item.str).join(' ');
+                    textContent += pageText + '\n';
+                }
+                
+                return textContent;
+            }
+            
+            // 备用PDF文本提取方法
+            async _extractPDFTextAlternate(fileData) {
+                // 使用不同的配置参数
+                const pdf = await pdfjsLib.getDocument({
+                    data: fileData,
+                    useSystemFonts: true,  // 尝试使用系统字体
+                    cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/cmaps/',
+                    cMapPacked: true
+                }).promise;
+                
+                const numPages = pdf.numPages;
+                let textContent = '';
+                
+                for (let i = 1; i <= numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    // 尝试使用不同的文本提取配置
+                    const content = await page.getTextContent({
+                        includeMarkedContent: true,
+                        disableCombineTextItems: true
+                    });
+                    
+                    // 尝试不同的文本处理方式
+                    let pageText = '';
+                    for (const item of content.items) {
+                        // 过滤掉空白或控制字符，但保留正常文本
+                        const cleanStr = item.str.replace(/[\x00-\x1F\x7F-\x9F]/g, '').trim();
+                        if (cleanStr) {
+                            pageText += cleanStr + ' ';
+                        }
+                    }
+                    
+                    textContent += pageText.trim() + '\n';
+                }
+                
+                return textContent;
+            }
+            
+            // PDF页面OCR识别方法
+            async _performPDFOCR(fileData) {
+                try {
+                    const pdf = await pdfjsLib.getDocument({ data: fileData }).promise;
+                    const numPages = pdf.numPages;
+                    let ocrResults = '';
+                    
+                    // 设置Canvas渲染参数
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    
+                    // 逐页进行OCR识别
+                    for (let i = 1; i <= numPages; i++) {
+                        if (this.onProgress) this.onProgress(`正在对第 ${i}/${numPages} 页进行OCR识别...`);
+                        
+                        const page = await pdf.getPage(i);
+                        
+                        // 设置页面渲染尺寸，提高OCR质量
+                        const viewport = page.getViewport({ scale: 2.0 }); // 提高分辨率以改善OCR效果
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        
+                        // 渲染页面到Canvas
+                        await page.render({
+                            canvasContext: context,
+                            viewport: viewport
+                        }).promise;
+                        
+                        // 获取Canvas图片数据
+                        const imageDataUrl = canvas.toDataURL('image/png');
+                        
+                        // 对图片进行OCR识别
+                        try {
+                            const pageOcrText = await this._performOCR(imageDataUrl);
+                            if (pageOcrText) {
+                                ocrResults += `[第${i}页OCR内容]\n${pageOcrText}\n\n`;
+                            }
+                        } catch (ocrError) {
+                            console.warn(`第${i}页OCR识别失败:`, ocrError);
+                            ocrResults += `[第${i}页OCR识别失败: ${ocrError.message}]\n\n`;
+                        }
+                        
+                        // 清理Canvas，准备下一页
+                        context.clearRect(0, 0, canvas.width, canvas.height);
+                    }
+                    
+                    return ocrResults.trim();
+                } catch (error) {
+                    console.error('PDF OCR处理失败:', error);
+                    return `[OCR处理失败: ${error.message}]`;
+                }
+            }
+
+            // 解析DOCX文件（使用mammoth.js）
+            async parseDOCX(file) {
+                try {
+                    if (this.onProgress) this.onProgress("正在加载Word文件(.docx)...");
+                    
+                    const arrayBuffer = await this._readFileAsArrayBuffer(file);
+                    
+                    if (this.onProgress) this.onProgress("正在解析Word文档内容...");
+                    
+                    // 加载ZIP内容，用于后续的图片提取
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+                    
+                    let textContent = '';
+                    try {
+                        // 主要方法：使用mammoth.js提取纯文本
+                        textContent = await this._extractDOCXText(arrayBuffer);
+                        
+                        // 如果提取的文本为空或过少，尝试备用方法
+                        if (!textContent.trim() || textContent.trim().length < 100) {
+                            if (this.onProgress) this.onProgress("首次提取效果不佳，尝试备用方法...");
+                            textContent = await this._extractDOCXTextAlternate(arrayBuffer);
+                        }
+                    } catch (primaryError) {
+                        // 主要方法失败，尝试备用方法
+                        if (this.onProgress) this.onProgress(`主要方法失败(${primaryError.message})，尝试备用提取方法...`);
+                        textContent = await this._extractDOCXTextAlternate(arrayBuffer);
+                    }
+                    
+                    // 执行OCR识别获取图片内容
+                    if (this.onProgress) this.onProgress("正在提取并识别文档中的图片...");
+                    const ocrText = await this.extractAndRecognizeImages(zip, 'docx');
+                    
+                    // 合并文本内容和OCR内容
+                    const finalContent = textContent + (ocrText ? ocrText : '');
+                    
+                    if (this.onProgress) this.onProgress("Word内容提取完成（含图片OCR）");
+                    return finalContent;
+                } catch (error) {
+                    console.error('DOCX解析错误:', error);
+                    throw new Error(`Word(.docx)文件解析失败: ${error.message}`);
+                }
+            }
+            
+            // 主要DOCX文本提取方法
+            async _extractDOCXText(arrayBuffer) {
+                const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+                return result.value;
+            }
+            
+            // 备用DOCX文本提取方法
+            async _extractDOCXTextAlternate(arrayBuffer) {
+                try {
+                    // 使用不同的选项重新尝试mammoth.js
+                    const options = {
+                        includeDefaultStyleMap: true,
+                        styleMap: [
+                            "p[style-name='Normal'] => p:fresh",
+                            "h1 => h1:fresh",
+                            "h2 => h2:fresh",
+                            "h3 => h3:fresh",
+                            "h4 => h4:fresh",
+                            "h5 => h5:fresh",
+                            "h6 => h6:fresh",
+                            "p[style-name='Heading 1'] => h1:fresh",
+                            "p[style-name='Heading 2'] => h2:fresh"
+                        ]
+                    };
+                    
+                    // 尝试提取带格式的文本
+                    const result = await mammoth.extractMarkdown({ 
+                        arrayBuffer: arrayBuffer,
+                        ...options 
+                    });
+                    
+                    // 如果markdown提取也失败，尝试直接提取HTML并转换为文本
+                    if (!result.value || !result.value.trim()) {
+                        const htmlResult = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+                        return this._extractTextFromHtml(htmlResult.value);
+                    }
+                    
+                    return result.value;
+                } catch (error) {
+                    // 如果所有方法都失败，尝试使用JSZip直接读取文档内容（有限支持）
+                    try {
+                        const zip = await JSZip.loadAsync(arrayBuffer);
+                        
+                        // 尝试直接读取document.xml或word/document.xml
+                        const contentPath = zip.files['document.xml'] ? 'document.xml' : 
+                                           zip.files['word/document.xml'] ? 'word/document.xml' : null;
+                        
+                        if (contentPath) {
+                            const content = await zip.file(contentPath).async('string');
+                            return this._extractTextFromXml(content);
+                        }
+                        
+                        throw new Error('无法找到文档内容');
+                    } catch (zipError) {
+                        throw new Error(`备用方法也失败: ${zipError.message}`);
+                    }
+                }
+            }
+            
+            // 从HTML中提取纯文本
+            _extractTextFromHtml(html) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                return tempDiv.textContent || tempDiv.innerText || '';
+            }
+            
+            // 从XML中提取纯文本（简单实现）
+            _extractTextFromXml(xml) {
+                // 移除XML标签
+                let text = xml.replace(/<[^>]*>/g, '');
+                // 移除XML实体引用
+                text = text.replace(/&[a-zA-Z]+;/g, '');
+                // 清理空白字符
+                text = text.replace(/\s+/g, ' ').trim();
+                return text;
+            }
+
+            // 尝试解析WPS文件（Kingsoft文档格式）
+            async parseWPS(file) {
+                try {
+                    if (this.onProgress) this.onProgress("正在加载WPS文件(.wps)...");
+                    
+                    // WPS文件格式与DOCX相似，可以尝试使用相同的方法处理
+                    const arrayBuffer = await this._readFileAsArrayBuffer(file);
+                    
+                    if (this.onProgress) this.onProgress("正在解析WPS文档内容...");
+                    
+                    let textContent = '';
+                    let zip = null;
+                    
+                    try {
+                        // 先检查是否为ZIP格式，为后续OCR做准备
+                        const isZipFormat = this._checkZipSignature(arrayBuffer);
+                        if (isZipFormat) {
+                            try {
+                                zip = await JSZip.loadAsync(arrayBuffer);
+                            } catch (zipError) {
+                                console.warn('WPS文件解压失败，可能不影响文本提取但无法进行OCR:', zipError.message);
+                            }
+                        }
+                        
+                        // 尝试使用mammoth.js提取文本（可能有限支持）
+                        textContent = await this._extractDOCXText(arrayBuffer);
+                        
+                        // 如果提取的文本为空或过少，尝试使用JSZip直接处理
+                        if (!textContent.trim() || textContent.trim().length < 100) {
+                            if (this.onProgress) this.onProgress("首次提取效果不佳，尝试备用方法...");
+                            textContent = await this._extractWPSContent(arrayBuffer);
+                        }
+                    } catch (primaryError) {
+                        // 主要方法失败，尝试直接提取
+                        const errorMsg = primaryError.message || '未知错误';
+                        if (this.onProgress) this.onProgress(`主要方法失败(${errorMsg})，尝试备用提取方法...`);
+                        textContent = await this._extractWPSContent(arrayBuffer);
+                    }
+                    
+                    // 执行OCR识别获取图片内容（如果是ZIP格式且解压成功）
+                    let ocrText = '';
+                    if (zip) {
+                        if (this.onProgress) this.onProgress("正在提取并识别文档中的图片...");
+                        ocrText = await this.extractAndRecognizeImages(zip, 'wps');
+                    } else {
+                        if (this.onProgress) this.onProgress("无法提取图片进行OCR，文档可能为非ZIP格式或已损坏");
+                    }
+                    
+                    // 合并文本内容和OCR内容
+                    const finalContent = textContent + (ocrText ? ocrText : '');
+                    
+                    if (this.onProgress) this.onProgress("WPS内容提取完成（含图片OCR）");
+                    return finalContent;
+                } catch (error) {
+                    console.error('WPS解析错误:', error);
+                    // 直接抛出原始错误，避免重复添加前缀
+                    throw error;
+                }
+            }
+            
+            // 从WPS文件中提取内容
+            async _extractWPSContent(arrayBuffer) {
+                try {
+                    // 1. 先检测文件是否为有效的ZIP格式
+                    // 检查ZIP文件签名（文件开头是'PK'）
+                    const isZipFormat = this._checkZipSignature(arrayBuffer);
+                    
+                    if (!isZipFormat) {
+                        // 非ZIP格式的WPS文件，尝试文本提取方法
+                        if (this.onProgress) this.onProgress("检测到非ZIP格式的WPS文件，尝试文本提取方法...");
+                        // 尝试将二进制数据转换为文本，这可能对某些简单的旧版WPS文件有效
+                        const textContent = await this._extractTextFromBinary(arrayBuffer);
+                        if (textContent.trim().length > 50) { // 如果提取到足够的文本，认为成功
+                            if (this.onProgress) this.onProgress("成功从非ZIP格式WPS文件中提取文本");
+                            return textContent;
+                        }
+                        // 如果提取的文本太少，再抛出错误
+                        throw new Error('非ZIP格式的WPS文件且文本提取效果不佳');
+                    }
+                    
+                    // 2. 使用JSZip尝试解压WPS文件
+                    if (this.onProgress) this.onProgress("尝试使用JSZip解压WPS文件...");
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+                    
+                    // 3. 扩展搜索路径，支持更多WPS格式变种
+                    const contentFiles = [
+                        // 标准WPS XML路径
+                        'document.xml', 
+                        'content.xml',
+                        'office/document.xml',
+                        // Word兼容模式路径
+                        'word/document.xml',
+                        // 其他可能的路径
+                        'wps/document.xml',
+                        'ksf/body.xml',
+                        'data/content.xml',
+                        'main.xml'
+                    ];
+                    
+                    let contentXml = null;
+                    
+                    // 遍历所有可能的文件路径
+                    for (const filePath of contentFiles) {
+                        if (zip.files[filePath]) {
+                            if (this.onProgress) this.onProgress(`找到内容文件: ${filePath}`);
+                            contentXml = await zip.file(filePath).async('string');
+                            break;
+                        }
+                    }
+                    
+                    if (contentXml) {
+                        // 从XML中提取文本
+                        if (this.onProgress) this.onProgress("从XML中提取文本内容...");
+                        return this._extractTextFromXml(contentXml);
+                    }
+                    
+                    // 如果找不到XML文件，提供更详细的错误信息
+                    const availableFiles = Object.keys(zip.files).join(', ');
+                    throw new Error(`找不到标准XML内容文件。可用文件: ${availableFiles.length > 100 ? availableFiles.substring(0, 100) + '...' : availableFiles}`);
+                } catch (error) {
+                    // 分类处理不同类型的错误，提供更具体的指导
+                    if (error.message.includes('Can\'t find end of central directory')) {
+                        // JSZip特定错误，说明文件不是有效的ZIP格式
+                        throw new Error('WPS文件解析失败: 该WPS文件格式不兼容或已损坏。建议将文件另存为.docx或PDF格式后再上传，或手动复制文档内容。');
+                    } else if (error.message.includes('非ZIP格式')) {
+                        // 非ZIP格式的WPS文件，提供更友好的错误信息
+                        throw new Error('WPS文件解析失败: 检测到旧版非ZIP格式WPS文件。已尝试文本提取但效果有限，建议将文件另存为.docx或PDF格式后再上传，或直接复制文档内容到文本输入框。');
+                    } else if (error.message.includes('找不到标准XML')) {
+                        // 找到了ZIP但找不到内容文件
+                        throw new Error('WPS文件解析失败: WPS文件结构异常，无法识别内容位置。建议将文件另存为.docx或PDF格式，或手动复制文档内容到文本输入框。');
+                    } else {
+                        // 其他错误
+                        throw new Error('WPS文件解析失败: WPS文件格式复杂，当前技术限制无法完整解析。建议将文件转换为.docx或PDF格式后再上传，或手动复制文档内容到文本输入框。');
+                    }
+                }
+            }
+            
+            // 检查文件是否为有效的ZIP格式（通过检查文件头）
+            _checkZipSignature(arrayBuffer) {
+                // ZIP文件头以'PK'字符开头（ASCII 80, 75）
+                const view = new DataView(arrayBuffer);
+                return view.byteLength >= 2 && view.getUint8(0) === 80 && view.getUint8(1) === 75;
+            }
+            
+            // 从二进制数据中提取文本内容
+            async _extractTextFromBinary(arrayBuffer) {
+                try {
+                    // 使用多种编码尝试解码二进制数据
+                    // 1. 首先尝试UTF-8
+                    let decoder = new TextDecoder('utf-8');
+                    let textContent = decoder.decode(arrayBuffer);
+                    
+                    // 过滤掉控制字符和无效字符，保留可打印字符
+                    textContent = textContent
+                        .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '')
+                        .replace(/\s+/g, ' ')
+                        .trim();
+                    
+                    // 如果UTF-8解码效果不好（例如有大量乱码），尝试其他编码
+                    if (this._containsSignificantGarbage(textContent)) {
+                        // 尝试ISO-8859-1编码（Latin-1），可以处理单字节字符
+                        decoder = new TextDecoder('iso-8859-1');
+                        textContent = decoder.decode(arrayBuffer);
+                        textContent = textContent
+                            .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F]/g, '')
+                            .replace(/\s+/g, ' ')
+                            .trim();
+                    }
+                    
+                    return textContent;
+                } catch (error) {
+                    console.error('二进制文本提取错误:', error);
+                    return ''; // 提取失败时返回空字符串
+                }
+            }
+            
+            // 检查文本是否包含大量无效字符（垃圾数据）
+            _containsSignificantGarbage(text) {
+                // 统计可打印字符的比例
+                const printableChars = text.match(/[\p{L}\p{N}\p{P}\s]/gu) || [];
+                const printableRatio = printableChars.length / text.length;
+                
+                // 如果可打印字符比例低于50%，认为包含大量垃圾数据
+                return printableRatio < 0.5;
+            }
+            
+            // 尝试解析Excel文件（XLSX格式）
+            async parseXLSX(file) {
+                try {
+                    if (this.onProgress) this.onProgress("正在加载Excel文件(.xlsx)...");
+                    
+                    const arrayBuffer = await this._readFileAsArrayBuffer(file);
+                    
+                    if (this.onProgress) this.onProgress("正在解析Excel表格内容...");
+                    
+                    // 尝试使用JSZip直接解析Excel文件结构
+                    const textContent = await this._extractExcelContent(arrayBuffer);
+                    
+                    if (this.onProgress) this.onProgress("Excel内容提取完成");
+                    return textContent;
+                } catch (error) {
+                    console.error('XLSX解析错误:', error);
+                    throw new Error(`Excel(.xlsx)文件解析失败: ${error.message}`);
+                }
+            }
+            
+            // 尝试解析Excel文件（旧版XLS格式）
+            async parseXLS(file) {
+                try {
+                    if (this.onProgress) this.onProgress("正在加载旧版Excel文件(.xls)...");
+                    
+                    // 对于.xls文件，我们使用简化方法
+                    if (this.onProgress) this.onProgress("正在处理旧版Excel格式...");
+                    
+                    // 尝试使用文本方式读取，这只能处理某些简单情况
+                    try {
+                        const textContent = await this._readFileAsText(file);
+                        
+                        // 清理文本内容
+                        let cleanText = textContent
+                            .replace(/[\x00-\x1F\x7F-\x9F]/g, '') // 移除控制字符
+                            .replace(/\s+/g, ' ') // 规范化空白字符
+                            .trim();
+                        
+                        // 检查内容是否有意义
+                        if (cleanText.length > 100 && !cleanText.match(/^[\x00-\x1F\x7F-\x9F\s]*$/)) {
+                            if (this.onProgress) this.onProgress(".xls文件内容提取完成（部分内容可能不完整）");
+                            return cleanText;
+                        } else {
+                            throw new Error("无法直接提取有效文本");
+                        }
+                    } catch (e) {
+                        // 如果直接读取失败，提示用户需要手动转换
+                        throw new Error(".xls格式文件解析技术限制：由于浏览器安全限制，无法直接解析复杂的.xls格式。建议将文件转换为.xlsx或PDF格式后再上传，或手动复制文档内容到文本输入框。");
+                    }
+                } catch (error) {
+                    console.error('XLS解析错误:', error);
+                    throw error;
+                }
+            }
+            
+            // 从Excel文件中提取内容
+            async _extractExcelContent(arrayBuffer) {
+                try {
+                    // 使用JSZip解压Excel文件
+                    const zip = await JSZip.loadAsync(arrayBuffer);
+                    
+                    // 查找工作表文件
+                    const sheetFiles = Object.keys(zip.files).filter(key => key.startsWith('xl/worksheets/sheet') && key.endsWith('.xml'));
+                    
+                    if (sheetFiles.length === 0) {
+                        throw new Error('未找到工作表内容');
+                    }
+                    
+                    let allText = '';
+                    
+                    // 处理每个工作表
+                    for (let i = 0; i < sheetFiles.length; i++) {
+                        const sheetFile = sheetFiles[i];
+                        const sheetContent = await zip.file(sheetFile).async('string');
+                        
+                        // 添加工作表标题
+                        allText += `=== 工作表 ${i + 1} ===\n`;
+                        
+                        // 解析工作表XML提取数据
+                        // 创建临时元素来解析XML
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(sheetContent, "text/xml");
+                        
+                        // 获取所有单元格
+                        const cells = xmlDoc.getElementsByTagName("c");
+                        
+                        // 存储行数据
+                        const rows = {};
+                        
+                        // 处理每个单元格
+                        for (let j = 0; j < cells.length; j++) {
+                            const cell = cells[j];
+                            const cellAddress = cell.getAttribute("r");
+                            
+                            if (cellAddress) {
+                                // 提取行号（A1 -> 1, B2 -> 2）
+                                const rowNum = parseInt(cellAddress.match(/\d+/)[0], 10);
+                                
+                                // 初始化行数组
+                                if (!rows[rowNum]) {
+                                    rows[rowNum] = [];
+                                }
+                                
+                                // 获取单元格值
+                                let cellValue = '';
+                                const vElement = cell.getElementsByTagName("v")[0];
+                                if (vElement) {
+                                    cellValue = vElement.textContent;
+                                }
+                                
+                                // 存储单元格值
+                                rows[rowNum].push(cellValue);
+                            }
+                        }
+                        
+                        // 将行数据转换为文本
+                        const rowNumbers = Object.keys(rows).map(Number).sort((a, b) => a - b);
+                        for (const rowNum of rowNumbers) {
+                            allText += rows[rowNum].join('\t') + '\n';
+                        }
+                        
+                        allText += '\n'; // 工作表之间添加空行
+                    }
+                    
+                    if (!allText.trim()) {
+                        throw new Error('未能从Excel文件中提取任何文本内容');
+                    }
+                    
+                    return allText;
+                } catch (error) {
+                    // 如果解析失败，提供更友好的错误信息
+                    throw new Error(`Excel文件解析技术限制：${error.message}。为获得最佳效果，建议将Excel内容转换为文本或PDF格式后再上传。`);
+                }
+            }
+            
+            // 尝试解析DOC文件（旧版Word格式）
+            async parseDOC(file) {
+                try {
+                    if (this.onProgress) this.onProgress("正在加载Word文件(.doc)...");
+                    
+                    // 对于.doc文件，我们使用一种简化的方法
+                    // 由于浏览器环境限制，完整解析复杂的.doc格式非常困难
+                    // 这里我们将提供一个回退方案
+                    
+                    if (this.onProgress) this.onProgress("正在处理旧版Word格式...");
+                    
+                    // 尝试使用文本方式读取，这只能处理某些简单情况
+                    try {
+                        const textContent = await this._readFileAsText(file);
+                        
+                        // 清理文本内容
+                        let cleanText = textContent
+                            .replace(/[\x00-\x1F\x7F-\x9F]/g, '') // 移除控制字符
+                            .replace(/\s+/g, ' ') // 规范化空白字符
+                            .trim();
+                        
+                        // 检查内容是否有意义
+                        if (cleanText.length > 100 && !cleanText.match(/^[\x00-\x1F\x7F-\x9F\s]*$/)) {
+                            if (this.onProgress) this.onProgress(".doc文件内容提取完成（部分内容可能不完整）");
+                            return cleanText;
+                        } else {
+                            throw new Error("无法直接提取有效文本");
+                        }
+                    } catch (e) {
+                        // 如果直接读取失败，提示用户需要手动转换
+                        throw new Error(".doc格式文件解析技术限制：由于浏览器安全限制，无法直接解析复杂的.doc格式。建议将文件转换为.docx或PDF格式后再上传，或手动复制文档内容到文本输入框。");
+                    }
+                } catch (error) {
+                    console.error('DOC解析错误:', error);
+                    throw error;
+                }
+            }
+
+            // 读取文件为ArrayBuffer
+            _readFileAsArrayBuffer(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => reject(new Error('文件读取失败'));
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+
+            // 读取文件为文本
+            _readFileAsText(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => reject(new Error('文件读取失败'));
+                    reader.readAsText(file, 'utf-8');
+                });
+            }
+            
+            // 从文档中提取所有图片并进行OCR识别
+            async extractAndRecognizeImages(docContent, fileType) {
+                try {
+                    let images = [];
+                    
+                    // 根据文件类型采取不同的图片提取策略
+                    if (fileType === 'pdf') {
+                        images = await this._extractImagesFromPDF(docContent);
+                    } else if (fileType === 'docx' || fileType === 'wps') {
+                        images = await this._extractImagesFromOffice(docContent, fileType);
+                    } else {
+                        console.warn(`当前文件类型 ${fileType} 暂不支持图片提取，跳过OCR处理`);
+                        return '';
+                    }
+                    
+                    console.log(`成功提取到 ${images.length} 张图片`);
+                    
+                    if (images.length === 0) {
+                        return '';
+                    }
+                    
+                    // 对每张图片进行OCR识别
+                    let allOcrText = '';
+                    for (let i = 0; i < images.length; i++) {
+                        if (this.onProgress) this.onProgress(`正在对图片 ${i+1}/${images.length} 进行OCR识别...`);
+                        
+                        try {
+                            const ocrResult = await this._performOCR(images[i], i+1);
+                            allOcrText += `\n\n=== 图片${i+1} OCR识别结果 ===\n${ocrResult}`;
+                            console.log(`图片 ${i+1} OCR识别完成，识别到 ${ocrResult.length} 个字符`);
+                        } catch (ocrError) {
+                            console.error(`图片 ${i+1} OCR识别失败: ${ocrError.message}`);
+                            allOcrText += `\n\n=== 图片${i+1} OCR识别失败 ===\n错误信息: ${ocrError.message}`;
+                        }
+                    }
+                    
+                    return allOcrText;
+                } catch (error) {
+                    console.error(`图片提取与OCR处理失败: ${error.message}`);
+                    return ''; // 即使OCR失败也不应阻止整体文档处理
+                }
+            }
+            
+            // 执行OCR识别
+            async _performOCR(imageData, imageIndex) {
+                try {
+                    // 使用Tesseract.js进行OCR识别
+                    const result = await Tesseract.recognize(
+                        imageData,
+                        'chi_sim+eng', // 支持中英文识别
+                        {
+                            logger: progress => {
+                                const progressPercent = Math.round(progress.progress * 100);
+                                console.log(`图片${imageIndex} OCR进度: ${progressPercent}% - ${progress.status}`);
+                            }
+                        }
+                    );
+                    
+                    return result.data.text.trim() || 'OCR未识别到有效文本';
+                } catch (error) {
+                    throw new Error(`OCR识别错误: ${error.message}`);
+                }
+            }
+            
+            // 从PDF中提取图片
+            async _extractImagesFromPDF(pdfDocument) {
+                try {
+                    const images = [];
+                    
+                    // 简化处理，实际PDF图片提取需要使用PDF.js的更高级API
+                    console.log('PDF图片提取功能尚未完全实现');
+                    
+                    return images;
+                } catch (error) {
+                    console.error(`PDF图片提取失败: ${error.message}`);
+                    return [];
+                }
+            }
+            
+            // 从Office文档中提取图片
+            async _extractImagesFromOffice(content, fileType) {
+                try {
+                    const images = [];
+                    
+                    if (!content || typeof content.files !== 'object') {
+                        return images;
+                    }
+                    
+                    // 检查是否有图片文件
+                    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp'];
+                    
+                    // 遍历ZIP内容查找图片
+                    for (let key in content.files) {
+                        if (imageExtensions.some(ext => key.toLowerCase().includes(ext))) {
+                            const file = content.files[key];
+                            if (file && typeof file.async === 'function') {
+                                console.log(`找到图片文件: ${key}`);
+                                try {
+                                    const imageData = await file.async('arraybuffer');
+                                    const blob = new Blob([imageData]);
+                                    const imageUrl = URL.createObjectURL(blob);
+                                    images.push(imageUrl);
+                                } catch (e) {
+                                    console.error(`读取图片文件 ${key} 失败: ${e.message}`);
+                                }
+                            }
+                        }
+                    }
+                    
+                    return images;
+                } catch (error) {
+                    console.error(`Office文档图片提取失败: ${error.message}`);
+                    return [];
+                }
+            }
+
+            // 处理文件并分析
+            async processFile(file) {
+                try {
+                    let textContent = '';
+                    
+                    // 根据文件类型选择解析方法
+                    if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+                        textContent = await this.parsePDF(file);
+                    } else if (file.name.endsWith('.docx')) {
+                        textContent = await this.parseDOCX(file);
+                    } else if (file.name.endsWith('.doc')) {
+                        textContent = await this.parseDOC(file);
+                    } else if (file.name.endsWith('.wps')) {
+                        textContent = await this.parseWPS(file);
+                    } else if (file.name.endsWith('.xlsx')) {
+                        textContent = await this.parseXLSX(file);
+                    } else if (file.name.endsWith('.xls')) {
+                        textContent = await this.parseXLS(file);
+                    } else {
+                        throw new Error('不支持的文件格式，支持PDF、Word(.docx/.doc)、WPS(.wps)和Excel(.xlsx/.xls)文件');
+                    }
+                    
+                    // 检查提取的文本内容，放宽限制
+                    const trimmedContent = textContent.trim();
+                    
+                    // 即使只有少量文本也允许通过，只做警告
+                    if (!trimmedContent) {
+                        // 尝试使用备用方法提取文本
+                        try {
+                            // 对于PDF文件，尝试更宽松的文本提取方式
+                            if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
+                                throw new Error('PDF文件解析失败: PDF文件内容提取失败：该文件可能是扫描件、加密文件或格式特殊。建议检查文件是否包含可搜索文本。');
+                            } else if (file.name.endsWith('.docx')) {
+                                throw new Error('Word(.docx)文件内容提取失败：文件可能已损坏或使用了复杂格式。建议将内容复制到文本输入框尝试。');
+                            } else if (file.name.endsWith('.doc')) {
+                                throw new Error('旧版Word(.doc)文件解析失败：浏览器环境限制导致无法提取文本。请将文件转换为.docx或PDF格式后重试。');
+                            } else {
+                                throw new Error('文件内容为空或无法提取有效文本');
+                            }
+                        } catch (altError) {
+                            throw altError;
+                        }
+                    } else if (trimmedContent.length < 50) {
+                        // 记录警告但允许继续处理
+                        console.warn('警告：提取到的文本较少（', trimmedContent.length, '字符），可能影响分析质量');
+                    }
+                    
+                    return {
+                        success: true,
+                        textContent: textContent
+                    };
+                } catch (error) {
+                    return {
+                        success: false,
+                        error: error.message
+                    };
+                }
+            }
+        }
+
+        // 文档分析器 - 专注于DeepSeek API调用
+        class DeepSeekDocumentAnalyzer {
+            constructor() {
+                this.documentText = "";
+                this.policyFiles = [];
+                this.apiConfig = {
+                    endpoint: "https://api.deepseek.com/v1/chat/completions",
+                    key: "",
+                    model: "deepseek-chat"
+                };
+                this.onProgress = null;
+                this.onDetailInfo = null;
+            }
+            
+            // 设置进度回调
+            setProgressCallback(callback) {
+                this.onProgress = callback;
+                return this;
+            }
+            
+            // 设置详细信息回调（用于显示API调用详情）
+            setDetailInfoCallback(callback) {
+                this.onDetailInfo = callback;
+                return this;
+            }
+            
+            // 发送进度更新
+            _updateProgress(status) {
+                if (this.onProgress) {
+                    this.onProgress(status);
+                }
+            }
+            
+            // 发送详细信息
+            _updateDetailInfo(info, type = 'info') {
+                if (this.onDetailInfo) {
+                    this.onDetailInfo(info, type);
+                }
+                console.log(`[API细节] ${info}`);
+            }
+            
+            // 设置政策法规文件
+            setPolicyFiles(files) {
+                this.policyFiles = files;
+                return this;
+            }
+
+            // 设置文档文本
+            setDocumentText(text) {
+                this.documentText = text;
+                return this;
+            }
+
+            // 设置API配置
+            setApiConfig(config) {
+                this.apiConfig = { ...this.apiConfig, ...config };
+                return this;
+            }
+
+            // 分析文档内容 - 仅使用DeepSeek API
+            async analyze() {
+                if (!this.documentText.trim()) {
+                    this._updateDetailInfo("没有可分析的文档内容", 'error');
+                    return { error: "没有可分析的文档内容" };
+                }
+
+                if (!this.apiConfig.key || !this.apiConfig.endpoint) {
+                    this._updateDetailInfo("DeepSeek API配置不完整，请检查API密钥和端点", 'error');
+                    return { error: "DeepSeek API配置不完整，请检查API密钥和端点" };
+                }
+                
+                this._updateProgress('开始文档分析...');
+                this._updateDetailInfo('验证文档内容和API配置完成');
+                
+                // 如果有政策法规文件，提示用户
+                if (this.policyFiles && this.policyFiles.length > 0) {
+                    this._updateDetailInfo(`发现 ${this.policyFiles.length} 个政策法规文件，将优先使用这些文件作为判定依据`);
+                }
+                
+                this._updateProgress('准备调用API...');
+
+                try {
+                    return await this._analyzeWithDeepSeekApi();
+                } catch (error) {
+                    this._updateDetailInfo(`DeepSeek API分析失败: ${error.message}`, 'error');
+                    console.error('DeepSeek API分析失败:', error);
+                    throw new Error(`DeepSeek API调用失败: ${error.message}`);
+                }
+            }
+
+            // 使用DeepSeek API进行分析
+            async _analyzeWithDeepSeekApi() {
+                const systemPrompt = this._getSystemPrompt();
+                const userPrompt = this._buildUserPrompt();
+                
+                this._updateProgress('准备API调用...');
+                this._updateDetailInfo('正在准备API调用参数...');
+                
+                // 显示部分请求信息（不包含敏感信息）
+                this._updateDetailInfo(`使用模型: ${this.apiConfig.model}`);
+                this._updateDetailInfo(`系统提示词长度: ${systemPrompt.length} 字符`);
+                this._updateDetailInfo(`用户提示词长度: ${userPrompt.length} 字符`);
+                
+                // 显示请求配置
+                const configInfo = {
+                    temperature: 0.2,
+                    max_tokens: 2000,
+                    top_p: 0.9
+                };
+                this._updateDetailInfo(`请求配置: ${JSON.stringify(configInfo)}`);
+                
+                try {
+                    this._updateProgress('正在连接DeepSeek API服务器...');
+                    this._updateDetailInfo(`连接到API端点: ${this.apiConfig.endpoint}`);
+                    
+                    const response = await fetch(this.apiConfig.endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.apiConfig.key}`
+                        },
+                        body: JSON.stringify({
+                            model: this.apiConfig.model,
+                            messages: [
+                                {
+                                    role: "system",
+                                    content: systemPrompt
+                                },
+                                {
+                                    role: "user",
+                                    content: userPrompt
+                                }
+                            ],
+                            temperature: 0.2,
+                            max_tokens: 2000,
+                            top_p: 0.9,
+                            frequency_penalty: 0.0,
+                            presence_penalty: 0.0,
+                            stop: null
+                        })
+                    });
+
+                    this._updateProgress('正在处理API响应...');
+                    this._updateDetailInfo(`收到API响应，状态码: ${response.status}`);
+
+                    if (!response.ok) {
+                        const errorDetails = await response.json().catch(() => ({}));
+                        // 更详细地解析错误信息
+                        const errorMessage = errorDetails.error?.message || response.statusText;
+                        
+                        this._updateDetailInfo(`API错误: ${errorMessage}`, 'error');
+                        
+                        // 针对常见错误提供更友好的提示
+                        if (errorMessage.toLowerCase().includes('auth') || errorMessage.toLowerCase().includes('invalid')) {
+                            throw new Error(`身份验证失败: 您的API密钥无效或已过期。请检查密钥是否正确。`);
+                        } else if (errorMessage.toLowerCase().includes('limit')) {
+                            throw new Error(`API请求限制: 您的账户可能已达到请求限制。请检查账户状态。`);
+                        } else {
+                            throw new Error(`API请求失败: ${errorMessage}`);
+                        }
+                    }
+
+                    this._updateProgress('正在解析API响应数据...');
+                    const data = await response.json();
+                    
+                    this._updateDetailInfo('API响应解析完成，处理返回结果');
+                    this._updateDetailInfo(`响应包含 ${data.choices?.length || 0} 个选项`);
+                    
+                    const apiResponse = data.choices[0].message.content;
+                    
+                    this._updateProgress('分析结果格式化中...');
+                    this._updateDetailInfo(`收到响应内容长度: ${apiResponse.length} 字符`);
+                    
+                    // 格式化API返回的结果
+                    const formattedResult = this._formatApiResult(apiResponse);
+                    this._updateDetailInfo('分析完成，结果已格式化');
+                    
+                    return formattedResult;
+                } catch (error) {
+                    this._updateDetailInfo(`API调用失败: ${error.message}`, 'error');
+                    console.error('DeepSeek API调用错误:', error);
+                    throw error;
+                }
+            }
+
+            // 获取系统提示词 - 专业的招标方案审查提示词
+            _getSystemPrompt() {
+                let policyContent = "";
+                
+                // 添加政策法规文件内容
+                if (this.policyFiles && this.policyFiles.length > 0) {
+                    policyContent = `\n\n【本地政策法规依据】\n以下是用户提供的补充政策法规文件内容，请在分析时优先参考：\n`;
+                    
+                    this.policyFiles.forEach((file, index) => {
+                        if (file.content && file.content.trim()) {
+                            policyContent += `\n=== ${file.name} ===\n${file.content.trim()}\n\n`;
+                        }
+                    });
+                }
+                
+                return `你是招标方案隐性违规风险审查专家智能体，专注于识别政府采购、工程建设、企业采购类招标方案中的隐性违规问题。你的核心价值是通过语义解析与合规知识关联，挖掘人工易忽略的漏洞，并提供"问题 + 依据 + 建议"的可解释性结论。
+
+在分析招标方案文本时，严格按照以下标准判断隐性违规，需结合"条款表述 + 项目实际需求"综合推理，不可仅依赖关键词：
+
+1. 变相抬高资质门槛
+判断标准：资质要求与项目需求不匹配，排除合格供应商。
+典型场景：项目预算100万却要求"近3年完成500万以上项目经验"；软件开发项目要求"建筑行业资质"等无关资质。
+
+2. 条款倾向性表述
+判断标准：文字隐含指向特定供应商，限制公平竞争。
+典型场景：技术参数限定"某品牌SDK接口"（无"或同等水平"补充）；非必需的"某地区本地化服务团队"要求。
+
+3. 文字违法违规
+判断标准：违反《招标投标法》《政府采购法》及其实施条例，表述隐晦。
+典型场景："优先选择本地企业""需提供原厂独家授权"（变相排除代理商）。
+
+分析流程：
+1. 首先从招标方案中提取关键信息，包括项目类型、预算金额、资质要求、技术参数、评审标准、服务要求等。
+2. 推理"条款合理性"：资质要求是否与项目预算、类型匹配；技术参数是否存在"品牌绑定"；表述是否间接限制供应商范围。
+3. 若判定违规，必须关联至少1项合规依据，优先引用用户提供的本地政策法规文件中的内容，其次引用通用法律条文如《招标投标法》第5条（公平竞争）、第19条（条款合理性），《政府采购法》第22条（资质要求）等。
+${policyContent}
+
+输出规范（必须包含4要素）：
+请以"风险清单"形式输出，每类违规需包含：
+- 违规条款定位：引用招标方案中的原文，标注具体模块（如"资质要求部分""技术参数部分"）
+- 违规类型判定：明确归类为上述三类中的某一类
+- 判定依据：分点说明"语义推理过程 + 关联的法律条文/通用规则"，尽可能引用用户提供的本地政策法规文件内容
+- 修改建议：提供具体、可落地的条款修改方向，需符合合规要求且不影响项目需求
+
+禁止性要求：
+- 不做模糊结论：不得出现"可能违规""疑似违规"，需明确"违规"或"不违规"，并说明理由
+- 不遗漏关键信息：若招标方案中未明确项目预算、类型等关键信息，需提示并基于已有信息分析
+- 所有结论需标注"仅供合规审查参考，最终以专业合规人员审核为准"`;
+            }
+
+            // 构建用户提示词
+            _buildUserPrompt() {
+                // 限制文本长度，避免API请求过大
+                const maxTextLength = 15000;
+                const truncatedText = this.documentText.length > maxTextLength 
+                    ? this.documentText.substring(0, maxTextLength) + '...\n\n（文档内容过长，已截断。如果分析结果不理想，请考虑分批上传或提取关键部分进行分析。）' 
+                    : this.documentText;
+                
+                return `请分析以下招标方案文档内容，识别其中可能存在的隐性违规问题：
+
+"""
+${truncatedText}
+"""
+
+请严格按照要求的格式输出分析结果，确保内容专业、准确、有针对性。重点关注变相抬高资质门槛、条款倾向性表述和文字违法违规等三类问题。`;
+            }
+
+            // 格式化API返回结果
+            _formatApiResult(apiResponse) {
+                const now = new Date();
+                const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+                
+                const report = [];
+                report.push("=" . repeat(80));
+                report.push("文档智能审核报告 [DeepSeek API 专业分析]");
+                report.push(`生成时间: ${dateStr}`);
+                report.push("使用模型: " + this.apiConfig.model);
+                report.push("=" . repeat(80));
+                report.push("");
+                report.push("【专业审核结果】");
+                report.push(apiResponse);
+                report.push("");
+                report.push("=" . repeat(80));
+                report.push("重要提示：本审核结果由DeepSeek大模型基于专业提示词生成，");
+                report.push("仅供合规审查参考，最终以专业合规人员审核为准。");
+                report.push("=" . repeat(80));
+                
+                return report.join('\n');
+            }
+        }
+
+        // DOM 操作和事件处理
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            const fileInput = document.getElementById('fileInput');
+            const fileDropArea = document.getElementById('fileDropArea');
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileType = document.getElementById('fileType');
+            const fileSize = document.getElementById('fileSize');
+            const documentContent = document.getElementById('documentContent');
+            const analyzeBtn = document.getElementById('analyzeBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const resultSection = document.getElementById('resultSection');
+            const analysisResult = document.getElementById('analysisResult');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const processingStatus = document.getElementById('processingStatus');
+            const copyResultBtn = document.getElementById('copyResultBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            const apiKey = document.getElementById('apiKey');
+            const apiEndpoint = document.getElementById('apiEndpoint');
+            const apiModel = document.getElementById('apiModel');
+            
+            // 进度条相关DOM元素
+            const uploadProgressContainer = document.getElementById('uploadProgressContainer');
+            const uploadProgressBar = document.getElementById('uploadProgressBar');
+            const uploadProgressText = document.getElementById('uploadProgressText');
+            const analysisProgressContainer = document.getElementById('analysisProgressContainer');
+            const analysisProgressBar = document.getElementById('analysisProgressBar');
+            const analysisProgressText = document.getElementById('analysisProgressText');
+            const detailInfoLog = document.getElementById('detailInfoLog');
+            
+            // 政策法规文件上传相关DOM元素
+            const policyFileInput = document.getElementById('policyFileInput');
+            const policyFileDropArea = document.getElementById('policyFileDropArea');
+            const policyFilesList = document.getElementById('policyFilesList');
+            const clearPolicyFilesBtn = document.getElementById('clearPolicyFilesBtn');
+
+            // 当前处理的文件
+            let currentFile = null;
+            let currentTextSource = 'file'; // 'file' 或 'text'
+            let policyFiles = []; // 存储已上传的政策法规文件
+            
+            // 创建文件解析器实例
+            const fileParser = new FileParser();
+            fileParser.setProgressCallback((status) => {
+                processingStatus.textContent = status;
+            });
+
+            // 标签切换功能
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    const targetTab = this.getAttribute('data-tab');
+                    document.getElementById(targetTab).classList.add('active');
+                    
+                    // 更新当前文本来源
+                    currentTextSource = targetTab === 'file-upload' ? 'file' : 'text';
+                    updateAnalyzeButtonState();
+                });
+            });
+
+            // 更新分析按钮状态
+            function updateAnalyzeButtonState() {
+                // 检查API配置
+                const hasApiConfig = apiKey.value.trim() && apiEndpoint.value.trim();
+                
+                // 检查输入内容
+                let hasContent = false;
+                if (currentTextSource === 'file') {
+                    hasContent = !!currentFile;
+                } else {
+                    hasContent = !!documentContent.value.trim();
+                }
+                
+                // 只有当API配置完整且有输入内容时，启用分析按钮
+                analyzeBtn.disabled = !hasApiConfig || !hasContent;
+            }
+
+            // 监听API配置输入变化
+            [apiKey, apiEndpoint, apiModel].forEach(input => {
+                input.addEventListener('input', updateAnalyzeButtonState);
+            });
+            
+            // API密钥输入验证提示
+            apiKey.addEventListener('focusout', function() {
+                const key = this.value.trim();
+                if (key && !key.startsWith('sk-')) {
+                    showError('注意：DeepSeek API密钥通常以sk-开头，请确认您的密钥格式是否正确。');
+                }
+            });
+
+            // 显示错误信息
+            function showError(message) {
+                // 特别处理API密钥验证错误
+                if (message.includes('Authentication Fails') || message.includes('invalid')) {
+                    errorMessage.innerHTML = `
+                        <strong>API密钥验证失败</strong><br>
+                        ${message}<br>
+                        <small class="error-hint">请检查您的DeepSeek API密钥格式是否正确，应为sk-开头的字符串。如有疑问，请访问DeepSeek官方文档获取帮助。</small>
+                    `;
+                } else {
+                    errorMessage.textContent = message;
+                }
+                errorMessage.style.display = 'block';
+                successMessage.style.display = 'none';
+            }
+
+            // 显示成功信息
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                errorMessage.style.display = 'none';
+            }
+
+            // 隐藏所有消息
+            function hideMessages() {
+                errorMessage.style.display = 'none';
+                successMessage.style.display = 'none';
+            }
+
+            // 更新文件信息显示
+            function updateFileInfo(file) {
+                fileName.textContent = file.name;
+                fileType.textContent = file.type || '未知类型';
+                
+                // 格式化文件大小
+                let sizeText = '';
+                if (file.size < 1024) {
+                    sizeText = `${file.size} B`;
+                } else if (file.size < 1024 * 1024) {
+                    sizeText = `${(file.size / 1024).toFixed(2)} KB`;
+                } else {
+                    sizeText = `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+                }
+                fileSize.textContent = sizeText;
+                
+                fileInfo.classList.add('show');
+            }
+
+            // 文件选择处理
+            fileInput.addEventListener('change', function(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    processSelectedFile(file);
+                }
+            });
+
+            // 处理选中的文件
+            async function processSelectedFile(file) {
+                // 检查文件大小（30MB限制）
+                const maxSize = 30 * 1024 * 1024; // 30MB
+                if (file.size > maxSize) {
+                    showError('文件大小超过限制，请上传不超过30MB的文件');
+                    return;
+                }
+
+                // 检查文件类型
+                const validTypes = [
+                    'application/pdf', 
+                    'application/msword', 
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                    'application/vnd.ms-excel',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    'application/kingsoft.wps'
+                ];
+                const validExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.wps'];
+                const fileExtension = file.name.toLowerCase().substr(file.name.lastIndexOf('.'));
+                
+                if (!validTypes.includes(file.type) && !validExtensions.includes(fileExtension)) {
+                    showError('不支持的文件格式，请上传PDF、Word(.docx/.doc)、WPS(.wps)或Excel(.xlsx/.xls)文件');
+                    return;
+                }
+
+                // 保存当前文件
+                currentFile = file;
+                updateFileInfo(file);
+                updateAnalyzeButtonState();
+                hideMessages();
+                
+                // 设置文件解析器的进度回调
+                fileParser.setProgressCallback((progress, message) => {
+                    const uploadProgressBar = document.getElementById('uploadProgressBar');
+                    const uploadProgressText = document.getElementById('uploadProgressText');
+                    if (uploadProgressBar && uploadProgressText) {
+                        uploadProgressBar.style.width = `${progress}%`;
+                        uploadProgressText.textContent = `${progress}% - ${message}`;
+                    }
+                });
+                
+                // 显示进度条
+                if (uploadProgressContainer && uploadProgressBar && uploadProgressText) {
+                    uploadProgressContainer.style.display = 'block';
+                    uploadProgressBar.style.width = '0%';
+                    uploadProgressText.textContent = '0% - 文件准备就绪';
+                }
+                
+                // 对于.doc文件，预先提示用户可能的限制
+                if (fileExtension === '.doc') {
+                    showSuccess('已选择.doc文件。请注意，由于浏览器安全限制，复杂的.doc格式可能需要手动转换为.docx或PDF格式。');
+                }
+            }
+
+            // 拖放文件处理
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                fileDropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                fileDropArea.addEventListener(eventName, () => fileDropArea.classList.add('dragover'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                fileDropArea.addEventListener(eventName, () => fileDropArea.classList.remove('dragover'), false);
+            });
+
+            fileDropArea.addEventListener('drop', function(e) {
+                const dt = e.dataTransfer;
+                const file = dt.files[0];
+                
+                if (file) {
+                    processSelectedFile(file);
+                }
+            });
+
+            // 文本输入变化监听
+            documentContent.addEventListener('input', function() {
+                updateAnalyzeButtonState();
+            });
+
+            // 清空按钮事件
+            clearBtn.addEventListener('click', function() {
+                // 清空文件选择
+                fileInput.value = '';
+                currentFile = null;
+                fileInfo.classList.remove('show');
+                fileName.textContent = '-';
+                fileType.textContent = '-';
+                fileSize.textContent = '-';
+                
+                // 清空文本输入
+                documentContent.value = '';
+                
+                // 清空API配置（保留默认端点和模型）
+                apiKey.value = '';
+                
+                // 隐藏结果和消息
+                resultSection.style.display = 'none';
+                analysisResult.textContent = '';
+                hideMessages();
+                
+                // 隐藏并重置进度条
+                if (uploadProgressContainer && uploadProgressBar && uploadProgressText) {
+                    uploadProgressContainer.style.display = 'none';
+                    uploadProgressBar.style.width = '0%';
+                    uploadProgressText.textContent = '0%';
+                }
+                
+                if (analysisProgressContainer && analysisProgressBar && analysisProgressText && detailInfoLog) {
+                    analysisProgressContainer.style.display = 'none';
+                    analysisProgressBar.style.width = '0%';
+                    analysisProgressText.textContent = '准备中...';
+                    detailInfoLog.textContent = '';
+                }
+                
+                // 更新按钮状态
+                updateAnalyzeButtonState();
+            });
+            
+            // 清空政策法规文件按钮事件
+            clearPolicyFilesBtn.addEventListener('click', function() {
+                policyFileInput.value = '';
+                policyFiles = [];
+                updatePolicyFilesList();
+                showSuccess('已清空所有政策法规文件');
+            });
+            
+            // 处理政策法规文件上传
+            policyFileInput.addEventListener('change', async function(event) {
+                const files = Array.from(event.target.files);
+                await processPolicyFiles(files);
+            });
+            
+            // 政策法规文件拖放处理
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                if (policyFileDropArea) {
+                    policyFileDropArea.addEventListener(eventName, preventDefaults, false);
+                }
+            });
+            
+            if (policyFileDropArea) {
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    policyFileDropArea.addEventListener(eventName, () => policyFileDropArea.classList.add('dragover'), false);
+                });
+                
+                ['dragleave', 'drop'].forEach(eventName => {
+                    policyFileDropArea.addEventListener(eventName, () => policyFileDropArea.classList.remove('dragover'), false);
+                });
+                
+                policyFileDropArea.addEventListener('drop', async function(e) {
+                    const dt = e.dataTransfer;
+                    const files = Array.from(dt.files);
+                    
+                    if (files.length > 0) {
+                        await processPolicyFiles(files);
+                    }
+                });
+            }
+            
+            // 处理政策法规文件
+            async function processPolicyFiles(files) {
+                try {
+                    // 检查文件数量限制
+                    const totalFiles = policyFiles.length + files.length;
+                    if (totalFiles > 10) {
+                        showError('政策法规文件数量超过限制（最多10个文件）');
+                        return;
+                    }
+                    
+                    for (const file of files) {
+                        // 检查文件大小（100MB限制）
+                        const maxSize = 100 * 1024 * 1024; // 100MB
+                        if (file.size > maxSize) {
+                            showError(`${file.name} 文件大小超过限制（最多100MB）`);
+                            continue;
+                        }
+                        
+                        // 检查文件类型
+                        const validTypes = [
+                            'application/pdf', 
+                            'application/msword', 
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
+                            'text/plain', 
+                            'text/html', 
+                            'text/xml',
+                            'application/vnd.ms-excel',
+                            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                            'application/kingsoft.wps'
+                        ];
+                        const validExtensions = ['.pdf', '.doc', '.docx', '.txt', '.html', '.xml', '.xls', '.xlsx', '.wps'];
+                        const fileExtension = file.name.toLowerCase().substr(file.name.lastIndexOf('.'));
+                        
+                        if (!validTypes.includes(file.type) && !validExtensions.includes(fileExtension)) {
+                            showError(`${file.name} 不支持的文件格式，请上传文本、PDF、Word(.docx/.doc)、WPS(.wps)或Excel(.xlsx/.xls)文件`);
+                            continue;
+                        }
+                        
+                        // 解析文件内容
+                        processingStatus.textContent = `正在处理政策法规文件: ${file.name}...`;
+                        loadingIndicator.style.display = 'block';
+                        
+                        try {
+                            const result = await fileParser.processFile(file);
+                            
+                            if (!result.success) {
+                                showError(`${file.name} 解析失败: ${result.error}`);
+                                continue;
+                            }
+                            
+                            // 添加到政策法规文件列表
+                            policyFiles.push({
+                                name: file.name,
+                                content: result.textContent
+                            });
+                            
+                        } catch (err) {
+                            showError(`${file.name} 处理失败: ${err.message}`);
+                            continue;
+                        }
+                    }
+                    
+                    updatePolicyFilesList();
+                    showSuccess(`成功处理 ${files.length} 个政策法规文件`);
+                } finally {
+                    loadingIndicator.style.display = 'none';
+                    processingStatus.textContent = '';
+                }
+            }
+            
+            // 更新政策法规文件列表显示
+            function updatePolicyFilesList() {
+                if (!policyFilesList) return;
+                
+                policyFilesList.innerHTML = '';
+                
+                if (policyFiles.length === 0) {
+                    policyFilesList.innerHTML = '<li class="no-files">暂无政策法规文件，请上传本地政策法规文件以增强审核准确性</li>';
+                    if (clearPolicyFilesBtn) {
+                        clearPolicyFilesBtn.disabled = true;
+                    }
+                } else {
+                    policyFiles.forEach((file, index) => {
+                        const li = document.createElement('li');
+                        li.className = 'policy-file-item';
+                        
+                        const fileNameSpan = document.createElement('span');
+                        fileNameSpan.className = 'file-name';
+                        fileNameSpan.textContent = file.name;
+                        
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'remove-file-btn';
+                        removeBtn.textContent = '移除';
+                        removeBtn.onclick = function() {
+                            policyFiles.splice(index, 1);
+                            updatePolicyFilesList();
+                        };
+                        
+                        li.appendChild(fileNameSpan);
+                        li.appendChild(removeBtn);
+                        policyFilesList.appendChild(li);
+                    });
+                    
+                    if (clearPolicyFilesBtn) {
+                        clearPolicyFilesBtn.disabled = false;
+                    }
+                }
+            }
+
+            // 分析按钮事件
+            analyzeBtn.addEventListener('click', async function() {
+                try {
+                    // 隐藏之前的结果
+                    resultSection.style.display = 'none';
+                    analysisResult.textContent = '';
+                    hideMessages();
+                    
+                    // 显示加载指示器和进度条
+                    loadingIndicator.style.display = 'block';
+                    processingStatus.textContent = '准备分析...';
+                    
+                    // 显示上传进度容器（用于文件解析）
+                    uploadProgressContainer.style.display = 'block';
+                    uploadProgressBar.style.width = '0%';
+                    uploadProgressText.textContent = '0%';
+                    
+                    // 显示分析进度容器
+                    analysisProgressContainer.style.display = 'block';
+                    analysisProgressBar.style.width = '0%';
+                    analysisProgressText.textContent = '准备中...';
+                    detailInfoLog.textContent = '';
+                    
+                    // 预先验证API密钥格式
+                    const key = apiKey.value.trim();
+                    if (key && !key.startsWith('sk-')) {
+                        throw new Error(`API密钥格式不正确: ${key}。DeepSeek API密钥通常以sk-开头。`);
+                    }
+                    
+                    let documentText = '';
+                    
+                    // 设置文件解析器的进度回调
+                    fileParser.setProgressCallback((progress, message) => {
+                        uploadProgressBar.style.width = `${progress}%`;
+                        uploadProgressText.textContent = `${progress}% - ${message}`;
+                    });
+                    
+                    // 根据来源获取文档内容
+                    if (currentTextSource === 'file' && currentFile) {
+                        // 处理上传的文件
+                        const result = await fileParser.processFile(currentFile);
+                        
+                        if (!result.success) {
+                            throw new Error(result.error);
+                        }
+                        
+                        documentText = result.textContent;
+                    } else if (currentTextSource === 'text') {
+                        documentText = documentContent.value.trim();
+                        if (!documentText) {
+                            throw new Error('请输入要分析的文档内容');
+                        }
+                        // 如果是文本输入，直接设置上传进度为100%
+                        uploadProgressBar.style.width = '100%';
+                        uploadProgressText.textContent = '100% - 文本内容已准备好';
+                    } else {
+                        throw new Error('请选择文件或输入文档内容');
+                    }
+                    
+                    // 准备DeepSeek API配置
+                    const apiConfig = {
+                        endpoint: apiEndpoint.value.trim(),
+                        key: apiKey.value.trim(),
+                        model: apiModel.value.trim()
+                    };
+                    
+                    // 创建文档分析器实例
+                    const analyzer = new DeepSeekDocumentAnalyzer();
+                    
+                    // 设置进度和详细信息回调
+                    analyzer.setProgressCallback((progress, message) => {
+                        analysisProgressBar.style.width = `${progress}%`;
+                        analysisProgressText.textContent = message;
+                    });
+                    
+                    analyzer.setDetailInfoCallback((info, isError = false) => {
+                        const logEntry = document.createElement('div');
+                        logEntry.textContent = `${new Date().toLocaleTimeString()}: ${info}`;
+                        logEntry.className = isError ? 'log-error' : 'log-info';
+                        detailInfoLog.appendChild(logEntry);
+                        detailInfoLog.scrollTop = detailInfoLog.scrollHeight;
+                    });
+                    
+                    analyzer
+                        .setDocumentText(documentText)
+                        .setApiConfig(apiConfig);
+                    
+                    // 设置政策法规文件
+                    if (policyFiles && policyFiles.length > 0) {
+                        analyzer.setPolicyFiles(policyFiles);
+                    }
+                    
+                    // 执行分析
+                    processingStatus.textContent = '正在调用DeepSeek API进行智能分析...';
+                    const analysisResultText = await analyzer.analyze();
+                    
+                    // 检查是否有错误
+                    if (analysisResultText.error) {
+                        throw new Error(analysisResultText.error);
+                    }
+                    
+                    // 显示结果
+                    analysisProgressBar.style.width = '100%';
+                    analysisProgressText.textContent = '分析完成！';
+                    analysisResult.textContent = analysisResultText;
+                    resultSection.style.display = 'block';
+                    showSuccess('文档分析完成！');
+                } catch (error) {
+                    console.error('分析过程中出错:', error);
+                    let errorMsg = error.message;
+                    
+                    // 优化错误信息显示
+                    if (errorMsg.includes('API请求失败')) {
+                        if (errorMsg.includes('Authentication Fails') || errorMsg.includes('invalid')) {
+                            errorMsg = `DeepSeek API调用失败: API请求失败: 身份验证失败。请检查您的API密钥是否正确。`;
+                        } else {
+                            errorMsg = `DeepSeek API调用失败: API请求失败: ${errorMsg.replace('API请求失败: ', '')}`;
+                        }
+                    }
+                    
+                    // 在错误日志中添加错误信息
+                    const logEntry = document.createElement('div');
+                    logEntry.textContent = `${new Date().toLocaleTimeString()}: 错误: ${errorMsg}`;
+                    logEntry.className = 'log-error';
+                    detailInfoLog.appendChild(logEntry);
+                    detailInfoLog.scrollTop = detailInfoLog.scrollHeight;
+                    
+                    showError(`分析失败: ${errorMsg}`);
+                } finally {
+                    // 隐藏加载指示器
+                    loadingIndicator.style.display = 'none';
+                }
+            });
+
+            // 复制结果按钮事件
+            copyResultBtn.addEventListener('click', function() {
+                const textToCopy = analysisResult.textContent;
+                
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    showSuccess('报告已复制到剪贴板！');
+                }).catch(err => {
+                    showError('复制失败，请手动复制报告内容');
+                });
+            });
+
+            // 初始化界面
+            updateAnalyzeButtonState();
+        });
+    </script>
+</body>
+</html>
